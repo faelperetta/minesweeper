@@ -2,7 +2,7 @@ require File.expand_path('lib/cell.rb')
 
 # This class is resposible to provide the Minesweeper API
 class Minesweeper
-  attr_reader :stil_playing, :victory, :board
+  attr_reader :stil_playing, :victory
 
   def initialize(width, height, num_mines)
     @width = width
@@ -52,7 +52,7 @@ class Minesweeper
         if !@board[l][c].is_bomb && !@board[l][c].has_flag && @board[l][c].unknown
           @board[l][c].open
           @available_plays -= 1
-          expand(l,c)
+          expand(c,l)
         end
       end
     end
