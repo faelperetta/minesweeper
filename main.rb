@@ -7,20 +7,20 @@
 #######################
 
 require File.expand_path('lib/minesweeper.rb')
+require File.expand_path('lib/simple_printer.rb')
 
 width, height, num_mines = 10, 20, 50
 game = Minesweeper.new(width, height, num_mines)
 
-#game.board_state(true)
-#game.board_state
-#puts "\n\n"
+printer = SimplePrinter.new
 
 while (game.stil_playing)
   valid_move = game.play(rand(width), rand(height))
   valid_flag = game.flag(rand(width), rand(height))
   if valid_move or valid_flag
     puts 'BOARD STATE:'
-    game.board_state
+    printer.print game.board_state
+    puts ""
   end
 end
 
@@ -29,5 +29,5 @@ if game.victory
   puts "Você venceu!"
 else
   puts "Você perdeu! As minas eram:"
-  game.board_state true
+  printer.print game.board_state true
 end

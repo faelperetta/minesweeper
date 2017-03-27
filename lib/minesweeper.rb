@@ -37,6 +37,18 @@ class Minesweeper
     valid
   end
 
+  def board_state(show_values = false)
+    board_state = @board.collect do |line|
+      line.collect do |column|
+        show_values ? column.value : column.to_s
+      end
+    end
+
+    board_state
+  end
+
+  private
+
   def expand(column, line)
     bombs_around = @board[line][column].neighbors.select do |item|
       pos = item.split(',').collect { |e| e.to_i  }
@@ -57,28 +69,6 @@ class Minesweeper
       end
     end
   end
-
-  def board_state(show_values = false)
-    num_of_lines = @height - 1
-    num_of_columns = @width - 1
-
-    output = ""
-    for line in (0..num_of_lines)
-      for column in (0..num_of_columns)
-        if show_values
-          output += @board[line][column].value + " "
-        else
-          output += @board[line][column].to_s + " "
-        end
-      end
-      puts output
-      output = ""
-    end
-
-    puts "\n"
-  end
-
-  private
 
   def build_board
     @board = []
