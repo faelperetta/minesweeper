@@ -1,7 +1,10 @@
 require 'set'
 
+# This class represents a cell of an minesweeper board
 class Cell
+
   attr_reader :display, :neighbors, :value, :unknown
+
 
   def initialize(value = '-')
     @unknown = true
@@ -19,6 +22,8 @@ class Cell
     end
   end
 
+
+  # This method marks the cell as known
   def open
     @unknown = false
   end
@@ -51,23 +56,6 @@ class Cell
 
   def to_s
     @unknown ? @display : @value
-  end
-
-  def expand
-    has_bomb_around = false
-    @neighbors.each do |cell|
-      has_bomb_around = cell.is_bomb
-    end
-
-    if !has_bomb_around
-      @neighbors.each do |cell|
-        if !cell.is_bomb && !cell.has_flag
-          cell.unknown = false
-          puts "passou no expand"
-          cell.expand
-        end
-      end
-    end
   end
 
 end

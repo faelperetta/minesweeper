@@ -1,5 +1,6 @@
 require File.expand_path('lib/cell.rb')
 
+# This class is resposible to provide the Minesweeper API
 class Minesweeper
   attr_reader :stil_playing, :victory, :board
 
@@ -26,11 +27,9 @@ class Minesweeper
       @stil_playing = false
     elsif valid
       @available_plays -= 1
-      #puts "decrement #{line},#{column}"
       expand column, line
 
       if (@available_plays == 0)
-        #puts "JOGADAS RESTANTES = #{@available_plays}"
         @victory = true
         @stil_playing = false
       end
@@ -53,7 +52,6 @@ class Minesweeper
         if !@board[l][c].is_bomb && !@board[l][c].has_flag && @board[l][c].unknown
           @board[l][c].open
           @available_plays -= 1
-          #puts "decrement expand #{l},#{c}"
           expand(l,c)
         end
       end
