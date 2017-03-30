@@ -4,16 +4,20 @@ require File.expand_path('lib/cell.rb')
 class Minesweeper
   attr_reader :stil_playing, :victory
 
-  def initialize(width, height, num_mines)
+  def initialize(width, height, num_mines, bombs)
     @width = width
     @height = height
     @num_mines = num_mines
     @victory = false
     @stil_playing = true
-    @available_plays = (width * height) - num_mines
+
+    @bombs = generate_bombs(bombs)
+    @num_mines = num_mines == 0 ? @bombs.size : num_mines
+    @available_plays = (width * height) - @num_mines
+
+    puts "Numero de jogadas disponiveis: #{@available_plays}"
 
     build_board
-    generate_bombs
   end
 
   def flag(column, line)
@@ -47,13 +51,33 @@ class Minesweeper
     board_state
   end
 
+  def board_state_tip()
+    board_state = @board.collect.with_index do |line, line_index|
+      line.collect.with_index do |column, column_index|
+        if not column.is_bomb
+          bombs_around = num_bombs(column_index, line_index)
+          column.value = bombs_around.size.to_s
+          column.value
+        end
+        column.value
+      end
+    end
+  end
+
   private
 
-  def expand(column, line)
+  def num_bombs(column, line)
     bombs_around = @board[line][column].neighbors.select do |item|
       pos = item.split(',').collect { |e| e.to_i  }
       @board[pos[0]][pos[1]].is_bomb
     end
+    bombs_around
+  end
+
+  def expand(column, line)
+    bombs_around = num_bombs(column, line)
+
+    @board[line][column].value = bombs_around.size.to_s
 
     if bombs_around.size == 0
       @board[line][column].neighbors.each do |position|
@@ -73,7 +97,7 @@ class Minesweeper
   def build_board
     @board = []
 
-    bombs = generate_bombs
+    bombs = @bombs
 
     num_of_lines = @height - 1
     num_of_columns = @width - 1
@@ -81,8 +105,8 @@ class Minesweeper
     for line in (0..num_of_lines)
       @board[line] = []
       for column in (0..num_of_columns)
-        hash = "#{line}-#{column}"
-        cell = bombs.key?(hash) ? bombs[hash] : Cell.new
+        key = [line, column]
+        cell = bombs.key?(key) ? bombs[key] : Cell.new
         @board[line][column] = cell
 
         set_neighbors(line, column)
@@ -114,18 +138,25 @@ class Minesweeper
 
   end
 
-  def generate_bombs
-    bombs = {}
+  def generate_bombs(bombs)
+    bombs_hash = {}
 
-    while(bombs.size < @num_mines)
-      line = rand(@height)
-      column = rand(@width)
-
-      hash = "#{line}-#{column}"
-      bombs[hash] = Cell.new "*" if not bombs.key?(hash)
+    if bombs && bombs.size > 0
+      bombs.each do |position|
+        bombs_hash[position] = Cell.new "*" if not bombs_hash.key?(position)
+      end
+      return bombs_hash
     end
 
-    bombs
+
+    while(bombs_hash.size < @num_mines)
+      line = rand(@height)
+      column = rand(@width)
+      key = [line, column]
+      bombs_hash[key] = Cell.new "*" if not bombs_hash.key?(hash)
+    end
+
+    bombs_hash
 
   end
 end

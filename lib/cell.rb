@@ -3,7 +3,8 @@ require 'set'
 # This class represents a cell of an minesweeper board
 class Cell
 
-  attr_reader :display, :neighbors, :value, :unknown
+  attr_reader :display, :neighbors, :unknown
+  attr_accessor :value
 
 
   def initialize(value = '-')
